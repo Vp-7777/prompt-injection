@@ -1,0 +1,22 @@
+[project]
+name = "prompt-injection-env"
+version = "0.1.0"
+description = "OpenEnv RL environment for prompt injection defense"
+authors = [
+    { name = "Vishal Patel" }
+]
+
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "pydantic",
+    "requests",
+    "openenv-core>=0.2.0"
+]
+
+[project.scripts]
+server = "server.app:main"
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"

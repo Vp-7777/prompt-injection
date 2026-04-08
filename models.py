@@ -3,7 +3,11 @@ from pydantic import BaseModel
 class Observation(BaseModel):
     user_input: str
     task_type: str
+    step: int = 0
 
 class Action(BaseModel):
-    decision: str  # ALLOW | BLOCK | SANITIZE
-    response: str
+    action_type: str  # ALLOW / BLOCK / SANITIZE
+
+class Reward(BaseModel):
+    score: float
+    reason: str

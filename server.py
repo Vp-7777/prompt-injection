@@ -1,19 +1,24 @@
 from fastapi import FastAPI
-from models import Action
 from env import PromptInjectionEnv
+from models import Action
 
-app = FastAPI()   # ✅ THIS LINE IS VERY IMPORTANT
+app = FastAPI()
 
 env = PromptInjectionEnv()
 
-@app.post("/reset")
+
+@app.get("/")
+def home():
+    return {"message": "Server is running"}
+
+
+@app.get("/reset")
 def reset(task: str = "easy"):
-    return env.reset(task)
+    state = env.reset(task)
+    return state
+
 
 @app.post("/step")
 def step(action: Action):
-    return env.step(action)
-
-@app.get("/state")
-def state():
-    return env.get_state()
+    result = env.step(action)
+    return result
