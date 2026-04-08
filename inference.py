@@ -7,7 +7,7 @@ from openai import OpenAI, OpenAIError
 # =========================
 API_BASE_URL = os.getenv("API_BASE_URL", "http://127.0.0.1:8000")
 MODEL_NAME = os.getenv("MODEL_NAME", "meta-llama/llama-3-8b-instruct")
-API_KEY = os.getenv("OPENAI_API_KEY")
+API_KEY = os.getenv("API_KEY", os.getenv("OPENAI_API_KEY"))
 
 ENV_NAME = "prompt-injection-env"
 
@@ -19,7 +19,7 @@ if API_KEY:
     try:
         client = OpenAI(
             api_key=API_KEY,
-            base_url="https://openrouter.ai/api/v1"
+            base_url=API_BASE_URL
         )
     except OpenAIError as e:
         print(f"[WARN] OpenAI client init failed: {e}", flush=True)
@@ -28,7 +28,7 @@ if API_KEY:
         print(f"[WARN] Unexpected OpenAI init error: {e}", flush=True)
         client = None
 else:
-    print("[WARN] OPENAI_API_KEY is not set; falling back to safe BLOCK behavior", flush=True)
+    print("[WARN] API_KEY is not set; falling back to safe BLOCK behavior", flush=True)
 
 
 # =========================
