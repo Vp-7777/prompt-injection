@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from env import PromptInjectionEnv
+from models import Action
 
 app = FastAPI()
 env = PromptInjectionEnv()
@@ -11,7 +12,7 @@ def reset(task: str = "easy"):
 
 
 @app.post("/step")
-def step(action: dict):
+def step(action: Action):
     return env.step(action)
 
 

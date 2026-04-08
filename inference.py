@@ -15,6 +15,9 @@ client = OpenAI(
 )
 
 
+# =========================
+# ACTION GENERATION
+# =========================
 def get_action(user_input):
     prompt = f"""
 You are a strict AI security agent.
@@ -38,7 +41,18 @@ ALLOW or BLOCK or SANITIZE
             messages=[{"role": "user", "content": prompt}],
             temperature=0
         )
-        return response.choices[0].message.content.strip()
+
+        action = response.choices[0].message.content.strip().upper()
+
+        # ✅ Clean unexpected output
+        if "BLOCK" in action:
+            return "BLOCK"
+        elif "ALLOW" in action:
+            return "ALLOW"
+        elif "SANITIZE" in action:
+            return "SANITIZE"
+        else:
+            return "BLOCK"
 
     except Exception as e:
         print(f"[DEBUG] Model error: {e}", flush=True)
@@ -68,9 +82,11 @@ def run_task(task):
             json={"action_type": action}
         ).json()
 
-        reward = result["reward"]["score"] if isinstance(result["reward"], dict) else result["reward"]
-        done = result["done"]
+        # ✅ Robust reward extraction
+        reward_data = result.get("reward", 0.0)
+        reward = reward_data["score"] if isinstance(reward_data, dict) else reward_data
 
+        done = result["done"]
         rewards.append(reward)
 
         print(
@@ -81,7 +97,7 @@ def run_task(task):
         if not done:
             state = result["observation"]
 
-    final_score = result["info"].get("final_score", 0.0)
+    final_score = result.get("info", {}).get("final_score", 0.0)
     success = final_score >= 0.8
 
     print(

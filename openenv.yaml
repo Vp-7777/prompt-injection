@@ -1,21 +1,22 @@
 name: prompt-injection-env
-description: Reinforcement learning environment for detecting prompt injection attacks
+description: Reinforcement learning environment for detecting and mitigating prompt injection attacks in LLM systems
 version: 0.1.0
 
 entry_point: env:PromptInjectionEnv
 
 observation_space:
   type: object
+  description: Observation returned by the environment at each step
   properties:
     user_input:
       type: string
-      description: The input message from the user
+      description: The current input message from the user or system
     task_type:
       type: string
       description: Difficulty level of the task (easy, medium, hard)
     step:
       type: integer
-      description: Current step in multi-step interaction
+      description: Current step index in a multi-step interaction
   required:
     - user_input
     - task_type
@@ -23,13 +24,21 @@ observation_space:
 
 action_space:
   type: string
+  description: Action taken by the agent in response to the input
   enum:
     - ALLOW
     - BLOCK
     - SANITIZE
+  examples:
+    ALLOW: Accept the input as safe
+    BLOCK: Reject the input as malicious
+    SANITIZE: Modify or partially accept the input to reduce risk
 
 reward:
   type: number
   minimum: 0.0
   maximum: 1.0
-  description: Reward score indicating correctness of the agent's action
+  description: >
+    Reward score indicating the correctness of the agent's action.
+    Full reward (1.0) is given for correct decisions, partial reward (0.5)
+    for sanitization or cautious handling, and lower values for incorrect actions.
